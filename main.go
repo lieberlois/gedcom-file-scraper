@@ -1,37 +1,50 @@
 package main
 
 import (
-	"bufio"
+	"flag"
 	"fmt"
-	"io/ioutil"
+	"gedcomFiles/util"
 	"log"
 	"os"
-	"flag"
+	"path/filepath"
 )
 
 func main() {
-	pathFile := flag.String("pathFile", "paths.txt", "Path to .txt-File containing filepaths")
-	targetPath := flag.String("targetPath", "data", "Path to target folder")
+	// Read CLI flags
+	targetPath := flag.String("targetFolder", "data", "Path to target folder")
+	pathToGedcom := flag.String("gedcomPath", "FamilieNeu.ged", "Path to .gedcom-File")
 	flag.Parse()
 
+	if *pathToGedcom == "" {
+		log.Fatal("Missing path to .gedcom-File")
+	}
 
-	paths, err := getPaths(*pathFile)
+	// Get paths from .gedcom-File
+	abspathToGedcomm, err := filepath.Abs(*pathToGedcom)
+	if err != nil {
+		log.Fatal("Error getting absolute path to .gedcom-File!")
+	}
+	paths, err := util.ExtractGedcomPaths(*pathToGedcom, filepath.Dir(abspathToGedcomm))
+
 
 	if err != nil {
 		log.Fatal("Error loading paths.")
 	}
 
+	fmt.Printf("Found %d paths in the .gedcom-File.\n", len(paths))
+
+	// Create target folder if it doesnt exist.
 	if _, err := os.Stat(*targetPath); os.IsNotExist(err) {
 		err = os.Mkdir(*targetPath, os.ModePerm)
 		if err != nil {
-			log.Fatal("Error creating target folder")
+			log.Fatal("Error creating target folder!")
 		}
 	}
 
 	amount := 0
 	for _, path := range paths {
 		if fileInfo, err := os.Stat(path); err == nil {
-			err := copyFile(path, fmt.Sprintf("%s/%s", *targetPath, fileInfo.Name()))
+			err := util.CopyFile(path, fmt.Sprintf("%s/%s", *targetPath, fileInfo.Name()))
 			if err != nil {
 				fmt.Printf("Copy of file '%s' failed", path)
 				continue
@@ -40,35 +53,4 @@ func main() {
 		}
 	}
 	fmt.Printf("Successfully copied %d of %d images.", amount, len(paths))
-}
-
-func getPaths(path string) ([]string, error) {
-	result := make([]string, 0)
-	file, err := os.Open(path)
-
-	if err != nil {
-		return result, err
-	}
-	defer file.Close()
-
-	sc := bufio.NewScanner(file)
-
-
-	for sc.Scan() {
-		result = append(result, sc.Text())
-	}
-	return result, nil
-}
-
-func copyFile(sourceFile string, destinationFile string) error {
-	input, err := ioutil.ReadFile(sourceFile)
-	if err != nil {
-		return err
-	}
-
-	err = ioutil.WriteFile(destinationFile, input, 0644)
-	if err != nil {
-		return err
-	}
-	return nil
 }
