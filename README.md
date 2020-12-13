@@ -9,7 +9,7 @@ Build: go build -o output_path
 
 Usage: [output_path] -gedcomPath path -targetFolder name
 
--gedcomPath string
+1. -gedcomPath string
         Path to .gedcom-file (default "FamilieNeu.ged")
--targetFolder string
+1. -targetFolder string
         Path to target folder (default "data")
