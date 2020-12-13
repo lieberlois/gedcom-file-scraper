@@ -12,17 +12,17 @@ import (
 func main() {
 	// Read CLI flags
 	targetPath := flag.String("targetFolder", "data", "Path to target folder")
-	pathToGedcom := flag.String("gedcomPath", "FamilieNeu.ged", "Path to .gedcom-File")
+	pathToGedcom := flag.String("gedcomPath", "FamilieNeu.ged", "Path to .gedcom-file")
 	flag.Parse()
 
 	if *pathToGedcom == "" {
-		log.Fatal("Missing path to .gedcom-File")
+		log.Fatal("Missing path to .gedcom-file")
 	}
 
 	// Extract paths from .gedcom-File
 	absoluteGedcomPath, err := filepath.Abs(*pathToGedcom)
 	if err != nil {
-		log.Fatal("Error getting absolute path to .gedcom-File!")
+		log.Fatal("Error getting absolute path to .gedcom-file!")
 	}
 	paths, err := util.ExtractGedcomPaths(*pathToGedcom, filepath.Dir(absoluteGedcomPath))
 
@@ -30,7 +30,7 @@ func main() {
 		log.Fatal("Error loading paths.")
 	}
 
-	fmt.Printf("Found %d paths in the .gedcom-File.\n", len(paths))
+	log.Printf("Found %d paths in the .gedcom-file.\n", len(paths))
 
 	// Create target folder if it doesnt exist.
 	if _, err := os.Stat(*targetPath); os.IsNotExist(err) {
@@ -46,11 +46,11 @@ func main() {
 		if fileInfo, err := os.Stat(path); err == nil {
 			err := util.CopyFile(path, fmt.Sprintf("%s/%s", *targetPath, fileInfo.Name()))
 			if err != nil {
-				fmt.Printf("Copy of file '%s' failed", path)
+				log.Printf("Copy of file '%s' failed", path)
 				continue
 			}
 			amount++
 		}
 	}
-	fmt.Printf("Successfully copied %d of %d images.", amount, len(paths))
+	log.Printf("Successfully copied %d of %d files.", amount, len(paths))
 }
