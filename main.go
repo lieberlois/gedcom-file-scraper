@@ -20,11 +20,11 @@ func main() {
 	}
 
 	// Extract paths from .gedcom-File
-	abspathToGedcomm, err := filepath.Abs(*pathToGedcom)
+	absoluteGedcomPath, err := filepath.Abs(*pathToGedcom)
 	if err != nil {
 		log.Fatal("Error getting absolute path to .gedcom-File!")
 	}
-	paths, err := util.ExtractGedcomPaths(*pathToGedcom, filepath.Dir(abspathToGedcomm))
+	paths, err := util.ExtractGedcomPaths(*pathToGedcom, filepath.Dir(absoluteGedcomPath))
 
 	if err != nil {
 		log.Fatal("Error loading paths.")
@@ -40,6 +40,7 @@ func main() {
 		}
 	}
 
+	// Attempt to copy files
 	amount := 0
 	for _, path := range paths {
 		if fileInfo, err := os.Stat(path); err == nil {

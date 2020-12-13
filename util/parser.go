@@ -14,10 +14,12 @@ func ExtractGedcomPaths(path string, basepath string) ([]string, error) {
 	res := make([]string, 0)
 
 	for idx, line := range lines {
+		// Ignore the .gedcom-file itself
 		if strings.Contains(line, ".ged"){
 			continue
 		}
 
+		// Standard paths are prefixed by 2 FILE
 		if strings.Contains(line, "FILE "){
 			splitPath := strings.Split(line, "FILE")
 			path := strings.TrimSpace(splitPath[len(splitPath) - 1])
@@ -25,6 +27,7 @@ func ExtractGedcomPaths(path string, basepath string) ([]string, error) {
 			res = append(res, path)
 
 			nextLine := lines[idx+1]
+			// Alternative paths are prefixed by 2 ALTPATH
 			if strings.Contains(nextLine, "ALTPATH "){
 				_, filename := filepath.Split(path)
 
