@@ -23,15 +23,10 @@ func ExtractGedcomPaths(path string, basepath string) ([]string, error) {
 			path := strings.TrimSpace(splitPath[len(splitPath) - 1])
 
 			res = append(res, path)
-			splitPath = strings.Split(path, "\\")
 
 			nextLine := lines[idx+1]
 			if strings.Contains(nextLine, "ALTPATH "){
-				filename := strings.TrimSpace(splitPath[len(splitPath) - 1])
-
-				if filename[:2] == ".\\" {
-					filename = filename[:2]
-				}
+				_, filename := filepath.Split(path)
 
 				splitPath = strings.Split(nextLine, "ALTPATH")
 				altpath := strings.TrimSpace(splitPath[len(splitPath) - 1])

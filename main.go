@@ -19,13 +19,12 @@ func main() {
 		log.Fatal("Missing path to .gedcom-File")
 	}
 
-	// Get paths from .gedcom-File
+	// Extract paths from .gedcom-File
 	abspathToGedcomm, err := filepath.Abs(*pathToGedcom)
 	if err != nil {
 		log.Fatal("Error getting absolute path to .gedcom-File!")
 	}
 	paths, err := util.ExtractGedcomPaths(*pathToGedcom, filepath.Dir(abspathToGedcomm))
-
 
 	if err != nil {
 		log.Fatal("Error loading paths.")
